@@ -1,0 +1,17 @@
+ pyroscope.scrape "profile_go_app" {
+      targets = [
+          {"__address__" = env("PPROF_HOSTNAME"), "service_name"= env("PPROF_HOSTNAME")},
+        ]
+      scheme = "https"
+      tls_config {
+        insecure_skip_verify = true
+      }
+      forward_to = [pyroscope.write.endpoint.receiver]
+      scrape_interval = "5s"
+ }
+
+pyroscope.write "endpoint" {
+  endpoint {
+    url = "http://localhost:4040"
+  }
+}

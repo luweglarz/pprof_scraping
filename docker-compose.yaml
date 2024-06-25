@@ -1,0 +1,27 @@
+---
+services:
+  pyroscope:
+    image: grafana/pyroscope
+    ports:
+      - '4040:4040'
+    network_mode: host
+
+  grafana-alloy:
+    image: 'grafana/alloy:v1.1.1'
+    user: root
+    privileged: true
+    pid: 'host'
+    environment:
+      - PPROF_HOSTNAME=${PPROF_HOSTNAME}
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - ./agent.river:/agent.river
+    ports:
+      - '12345:12345'
+    command:
+      - 'run'
+      - './agent.river'
+      - '--storage.path=/tmp/agent'
+      - '--server.http.listen-addr=0.0.0.0:12345'
+      - '--stability.level=public-preview'
+    network_mode: host
